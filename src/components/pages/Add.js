@@ -3,7 +3,6 @@ import fireDb from "../../firebase";
 import { useHistory } from "react-router-dom";
 import { TextField, Button} from "@material-ui/core";
 import { createMuiTheme, withStyles, makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { blue } from '@material-ui/core/colors';
 import SaveIcon from '@material-ui/icons/Save';
 
 const SaveButton = withStyles({
@@ -49,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
     },
 }));
-
 
 const Add = () => {
     const classes = useStyles();
