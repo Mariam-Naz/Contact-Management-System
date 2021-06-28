@@ -19,6 +19,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import PropTypes from 'prop-types';
 import { Delete, Edit, Visibility} from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
+import {Link} from "react-router-dom";
 
 // styling of table
 const StyledTableCell = withStyles((theme) => ({
@@ -195,7 +196,7 @@ const Home = () =>{
                                     <StyledTableCell>{contacts[id].mobile}</StyledTableCell>
                                     <StyledTableCell>{contacts[id].email}</StyledTableCell>
                                     <StyledTableCell>{contacts[id].address}</StyledTableCell>
-                                    <StyledTableCell><GreenIconButton><Edit /></GreenIconButton>  <IconButton aria-label="show" color="primary"> <Visibility /></IconButton> <IconButton aria-label="delete" color='secondary' onClick={() => onDelete(id)}>
+                                    <StyledTableCell><GreenIconButton component={Link} to={`/update/${id}`} ><Edit /></GreenIconButton>  <IconButton aria-label="show" color="primary"> <Visibility /></IconButton> <IconButton aria-label="delete" color='secondary' onClick={() => onDelete(id)}>
                                         <Delete />
                                     </IconButton></StyledTableCell>
                                 </StyledTableRow>

@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, { useState, useEffect }from "react";
 import fireDb from "../../firebase";
-import { useHistory } from "react-router-dom";
-import { TextField, Button} from "@material-ui/core";
+import { useHistory, useParams} from "react-router-dom";
+import { TextField, Button } from "@material-ui/core";
 import { createMuiTheme, withStyles, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
+import {isEmpty} from 'lodash'
 
 const SaveButton = withStyles({
     root: {
@@ -49,8 +50,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Add = () => {
+const Update = () =>{
     const classes = useStyles();
+    const [contacts, setContacts] = useState({});
+    let currentId = useParams();
+    const {id} = currentId;
+    useEffect(() => {
+        fetchContacts();
+    }, [id])
+    console.log('current id:' , currentId);
+    console.log('ID: ', id);
+    const fetchContacts = async () => {
+        fireDb.child('contacts').on("value", (snapshot) => {
+            if (snapshot.val() !== null) {
+                setContacts({
+                    ...snapshot.val(),
+                })
+            } else {
+                snapshot({});
+            }
+        })
+    }
 
     const values = {
         name: "",
@@ -58,27 +78,42 @@ const Add = () => {
         email: "",
         address: "",
     };
-    const [initialState , setState] = useState(values);
+    const [initialState, setState] = useState(values);
     const history = useHistory();
-    const handleChange = (e) =>{
-        let {name,value} = e.target;
+    const handleChange = (e) => {
+        let { name, value } = e.target;
         setState({
-                ...initialState,
-                [name]: value,
-            })
+            ...initialState,
+            [name]: value,
+        })
     }
-
-    const handleSubmit = () =>{
-     fireDb.child('contacts').push(initialState,(err)=>{
-         if(err){
-             console.log(err)
-         }
-     });
-     history.push('/')
-    }
-
     
-    return (
+    useEffect(()=>{
+        if(isEmpty(id)){
+            setState({...values})
+        }else{
+            setState({...contacts[id]})
+        }
+    },[id, contacts])
+
+    const handleSubmit = () => {
+        if(isEmpty(id)){
+        fireDb.child('contacts').push(initialState, (err) => {
+            if (err) {
+                console.log(err)
+            }
+        });
+    }else{
+        fireDb.child(`contacts/${id}`).set(initialState, (err) => {
+            if (err) {
+                console.log(err)
+            }
+        });
+    }
+        history.push('/')
+    }
+
+    return(
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-md-6 mx-auto'>
@@ -125,12 +160,12 @@ const Add = () => {
                         >
                             Save
                         </SaveButton>
-                    
+
                     </form>
                 </div>
             </div>
         </div>
     );
-};
+}
 
-export default Add;
+export default Update;
