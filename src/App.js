@@ -1,5 +1,6 @@
 import './App.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/bootstrap/dist/js/bootstrap.bundle';
 import Home from './components/pages/Home';
 import Add from './components/pages/Add';
 import Contact from './components/pages/Contact';

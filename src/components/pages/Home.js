@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import fireDb from "../../firebase";
-import { useState, useEffect } from 'react';
 import { withStyles, makeStyles, useTheme} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -20,6 +19,11 @@ import PropTypes from 'prop-types';
 import { Delete, Edit, Visibility} from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
 import {Link} from "react-router-dom";
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import { TextField, Button } from "@material-ui/core";
+import {isEmpty} from 'lodash'
 
 // styling of table
 const StyledTableCell = withStyles((theme) => ({
@@ -121,6 +125,21 @@ const GreenIconButton = withStyles((theme) => ({
     },
 }))(IconButton);
 
+//styling Modal
+const useStylesModal = makeStyles((theme) => ({
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+}));
+
 const Home = () =>{
     const classes = useStyles();
 
@@ -168,8 +187,81 @@ const Home = () =>{
         }
     }
 
+    //Modal
+    const values = {
+        name: "",
+        mobile: "",
+        email: "",
+        address: "",
+    };
+    const [initialState, setState] = useState(values);
+    
+    const classes1 = useStylesModal();
+    const [open, setOpen] = React.useState(false);
+
+    const handleOpen = (id) => {
+        setOpen(true);
+        if (isEmpty(id)) {
+            setState({ ...values })
+        } else {
+            setState({ ...contacts[id] })
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     return (
         <div className='container'>
+            <div>
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    className={classes1.modal}
+                    open={open}
+                    onClose={handleClose}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Fade in={open}>
+                        <div className={classes1.paper}>
+                            <form style={{ textAlign: 'center' }}>
+                                <TextField
+                                    label="Name"
+                                    style={{ margin: 8 }}
+                                    fullWidth
+                                    margin="normal"
+                                    type='text' name='name' value={initialState.name}
+                                />
+                                <TextField
+                                    label="Mobile"
+                                    style={{ margin: 8 }}
+                                    fullWidth
+                                    margin="normal"
+                                    type='phone' name='mobile' value={initialState.mobile}
+                                />
+                                <TextField
+                                    label="Email"
+                                    style={{ margin: 8 }}
+                                    fullWidth
+                                    margin="normal"
+                                    type='email' name='email' value={initialState.email}
+                                />
+                                <TextField
+                                    label="Address"
+                                    style={{ margin: 8 }}
+                                    fullWidth
+                                    margin="normal"
+                                    type='text' name='address' value={initialState.address}
+                                />
+                            </form>
+                        </div>
+                    </Fade>
+                </Modal>
+            </div>
             <div className='py-4'>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="Display Contacts">
@@ -196,7 +288,7 @@ const Home = () =>{
                                     <StyledTableCell>{contacts[id].mobile}</StyledTableCell>
                                     <StyledTableCell>{contacts[id].email}</StyledTableCell>
                                     <StyledTableCell>{contacts[id].address}</StyledTableCell>
-                                    <StyledTableCell><GreenIconButton component={Link} to={`/update/${id}`} ><Edit /></GreenIconButton>  <IconButton aria-label="show" color="primary"> <Visibility /></IconButton> <IconButton aria-label="delete" color='secondary' onClick={() => onDelete(id)}>
+                                    <StyledTableCell><GreenIconButton component={Link} to={`/update/${id}`} ><Edit /></GreenIconButton>  <IconButton aria-label="show" color="primary" onClick={()=> handleOpen(id)}><Visibility /></IconButton> <IconButton aria-label="delete" color='secondary' onClick={() => onDelete(id)}>
                                         <Delete />
                                     </IconButton></StyledTableCell>
                                 </StyledTableRow>
